@@ -17,9 +17,9 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 # Load environment variables
 load_dotenv()
 
-SENDGRID_API_KEY = "key"
-FROM_EMAIL = "email"
-TO_EMAIL = "email"
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+FROM_EMAIL = "sender@example.com"
+TO_EMAIL = "recipient@example.net"
 app = FastAPI()
 
 # CORS 설정
@@ -67,9 +67,14 @@ async def email(request: Request):
         sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)
 
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+
         return {"status": "success", "sendgrid_status_code": response.status_code}
 
     except Exception as e:
+        print(e.message)
         logging.exception("Error sending email")
         raise HTTPException(status_code=500, detail=str(e))
 
