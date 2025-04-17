@@ -4,20 +4,25 @@ export function SubscriberForm() {
       const formData = new FormData(event.target);
       const formObject = Object.fromEntries(formData.entries());
       console.log(formObject);
-      // const serviceUrl = import.meta.url.replace("index.js", ""); // 더 이상 필요하지 않습니다.
-      fetch(`/api/contact`, { // 수정된 부분: 절대 경로 사용
-          method:"post",
+      fetch(`/api/contact`, {
+          method: "post",
           headers: {
             "Content-Type": "application/json",
-            "Origin":location.origin
+            "Origin": location.origin
           },
-          body:JSON.stringify(formObject)
+          body: JSON.stringify(formObject)
       }).then((res)=>{
-          res.json().then((oResponse) => {
-              console.log(oResponse);
-              alert(`response: ${JSON.stringify(oResponse)}`);
-          });
-      })
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+      }).then((oResponse) => {
+          console.log(oResponse);
+          alert(`response: ${JSON.stringify(oResponse)}`);
+      }).catch((error) => {
+          console.error('Error:', error);
+          alert('Error submitting form: ' + error.message);
+      });
   }}>
     <label>
       name
